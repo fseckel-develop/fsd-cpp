@@ -9,6 +9,7 @@ set(HEADER_FILES
         src/DoubleList.h
         src/SingleList.h
         src/Vector.h
+        src/Deque.h
 )
 
 # setting source files
