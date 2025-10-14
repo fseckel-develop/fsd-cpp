@@ -22,37 +22,23 @@ public:
 
     // Constructors / Assignment / Destructor:
     DoubleList() noexcept = default;
-
-    DoubleList(std::initializer_list<valueType> initList) : AbstractList<valueType>() {
-        Node *currentNode = head_;
-        for (const valueType &value: initList) {
-            if (!head_) head_ = currentNode = new Node(value);
-            else {
-                currentNode->next = new Node(value);
-                currentNode->next->prev = currentNode;
-                currentNode = currentNode->next;
-            }
-        }
-        tail_ = currentNode;
-        size_ = initList.size();
+    DoubleList(std::initializer_list<T> initList) : AbstractList<T>() {
+        for (const auto& value : initList) insertLast(value);
     }
     DoubleList(const DoubleList& other) : AbstractList<valueType>() { copyFrom(other); }
-    DoubleList(DoubleList&& other) noexcept : AbstractList<valueType>() { moveFrom(other); }
+    DoubleList(DoubleList&& other) noexcept : AbstractList<valueType>() { moveFrom(std::move(other)); }
+    using AbstractList<T>::AbstractList; // Constructor with Initializer List
 
     DoubleList& operator=(const DoubleList& other) {
         if (this != &other) copyFrom(other);
         return *this;
     }
     DoubleList& operator=(DoubleList&& other) noexcept {
-        if (this != &other) { clear(); moveFrom(other); }
+        if (this != &other) { clear(); moveFrom(std::move(other)); }
         return *this;
     }
 
     ~DoubleList() noexcept override { clear(); }
-
-    // Size:
-    sizeType size() const noexcept override { return size_; }
-    bool isEmpty() const noexcept override { return size_ == 0; }
 
     // Element Access:
     reference front() noexcept override { return head_->data; }
@@ -72,82 +58,61 @@ public:
 
     reference at(const sizeType index) override {
         if (index >= size_) throw std::out_of_range("DoubleList::at");
-        return getNodeAt(index)->data;
+        return (*this)[index];
     }
     constReference at(const sizeType index) const override {
         if (index >= size_) throw std::out_of_range("DoubleList::at");
-        return getNodeAt(index)->data;
+        return (*this)[index];
     }
 
     // Modifiers:
-    void insertFirst(const valueType& value) override {
-        Node* newNode = new Node(value);
-        if (head_) {
-            newNode->next = head_;
-            head_->prev = newNode;
-        }
-        else tail_ = newNode;
-        head_ = newNode;
-        ++size_;
-    }
-    void insertLast(const valueType& value) override {
-        Node* newNode = new Node(value);
-        if (tail_) {
-            newNode->prev = tail_;
-            tail_->next = newNode;
-        }
-        else head_ = newNode;
-        tail_ = newNode;
-        ++size_;
-    }
     void insertAt(const sizeType index, const valueType& value) override {
         if (index > size_) return;
-        if (index == 0) return insertFirst(value);
-        if (index == size_) return insertLast(value);
         Node* newNode = new Node(value);
-        Node* node = getNodeAt(index);
-        newNode->next = node;
-        newNode->prev = node->prev;
-        node->prev->next = newNode;
-        node->prev = newNode;
+        if (index == 0) {
+            newNode->next = head_;
+            if (head_) head_->prev = newNode;
+            else tail_ = newNode;
+            head_ = newNode;
+        }
+        else if (index == size_) {
+            newNode->prev = tail_;
+            if (tail_) tail_->next = newNode;
+            else head_ = newNode;
+            tail_ = newNode;
+        }
+        else {
+            Node* node = getNodeAt(index);
+            newNode->next = node;
+            newNode->prev = node->prev;
+            node->prev->next = newNode;
+            node->prev = newNode;
+        }
         ++size_;
     }
 
-    void removeFirst() noexcept override {
-        if (size_ == 0) return;
-        if (size_ == 1) {
-            delete head_;
-            head_ = tail_ = nullptr;
-        } else {
-            const Node* temp = head_;
-            head_ = head_->next;
-            head_->prev = nullptr;
-            delete temp;
-        }
-        --size_;
-    }
-    void removeLast() noexcept override {
-        if (size_ == 0) return;
-        if (size_ == 1) {
-            delete head_;
-            head_ = tail_ = nullptr;
-        } else {
-            const Node* temp = tail_;
-            tail_ = tail_->prev;
-            tail_->next = nullptr;
-            delete temp;
-        }
-        --size_;
-    }
     void removeAt(const sizeType index) noexcept override {
         if (index >= size_) return;
-        if (index == 0) return removeFirst();
-        if (index == size_ - 1) return removeLast();
-        Node* node = getNodeAt(index);
-        const Node* temp = node;
-        node->prev->next = node->next;
-        node->next->prev = node->prev;
-        delete temp;
+        if (index == 0) {
+            const Node* target = head_;
+            head_ = head_->next;
+            if (head_) head_->prev = nullptr;
+            else tail_ = nullptr;
+            delete target;
+        }
+        else if (index == size_ - 1) {
+            const Node* target = tail_;
+            tail_ = tail_->prev;
+            if (tail_) tail_->next = nullptr;
+            else head_ = nullptr;
+            delete target;
+        }
+        else {
+            Node* target = getNodeAt(index);
+            target->prev->next = target->next;
+            target->next->prev = target->prev;
+            delete target;
+        }
         --size_;
     }
 
@@ -158,9 +123,9 @@ public:
     void clear() noexcept override {
         Node* currentNode = head_;
         while (currentNode) {
-            const Node* temp = currentNode;
+            const Node* target = currentNode;
             currentNode = currentNode->next;
-            delete temp;
+            delete target;
         }
         head_ = nullptr;
         tail_ = nullptr;
@@ -168,10 +133,12 @@ public:
     }
 
     // Comparison Operator:
-    bool operator==(const DoubleList& other) const noexcept {
-        if (size_ != other.size_) return false;
-        Node* currentNode = head_;
-        Node* otherNode = other.head_;
+    bool operator==(const AbstractList<valueType>& other) const noexcept override {
+        const auto* otherList = dynamic_cast<const DoubleList*>(&other); // NOLINT
+        if (!otherList) return false;
+        if (size_ != otherList->size_) return false;
+        const Node* currentNode = head_;
+        const Node* otherNode = otherList->head_;
         while (currentNode && otherNode) {
             if (currentNode->data != otherNode->data) return false;
             currentNode = currentNode->next;
@@ -179,10 +146,11 @@ public:
         }
         return true;
     }
-    bool operator!=(const DoubleList& other) const noexcept { return !(*this == other); }
-    bool operator<(const DoubleList& other) const noexcept {
-        Node* currentNode = head_;
-        Node* otherNode = other.head_;
+    bool operator<(const AbstractList<valueType>& other) const noexcept override {
+        const auto* otherList = dynamic_cast<const DoubleList*>(&other);
+        if (!otherList) return false;
+        const Node* currentNode = head_;
+        const Node* otherNode = otherList->head_;
         while (currentNode && otherNode) {
             if (currentNode->data < otherNode->data) return true;
             if (currentNode->data > otherNode->data) return false;
@@ -191,9 +159,6 @@ public:
         }
         return currentNode == nullptr && otherNode != nullptr;
     }
-    bool operator>(const DoubleList& other) const noexcept { return other < *this; }
-    bool operator<=(const DoubleList& other) const noexcept { return !(other < *this); }
-    bool operator>=(const DoubleList& other) const noexcept { return !(*this < other); }
 
     // Iterators:
     class iterator {
@@ -292,19 +257,7 @@ private:
 
     void copyFrom(const DoubleList& other) {
         clear();
-        Node* currentNode = head_;
-        Node* otherNode = other.head_;
-        while (otherNode) {
-            if (!head_) head_ = currentNode = new Node(otherNode->data);
-            else {
-                currentNode->next = new Node(otherNode->data);
-                currentNode->next->prev = currentNode;
-                currentNode = currentNode->next;
-            }
-            otherNode = otherNode->next;
-        }
-        tail_ = currentNode;
-        size_ = other.size_;
+        for (const auto& value : other) { insertLast(value); }
     }
 
     void moveFrom(DoubleList&& other) noexcept {

@@ -21,18 +21,12 @@ public:
 
     // Constructors / Assignment / Destructor:
     SingleList() noexcept = default;
-
-    SingleList(std::initializer_list<valueType> initList) : AbstractList<valueType>() {
-        Node *currentNode = head_;
-        for (const valueType &value: initList) {
-            if (!head_) head_ = currentNode = new Node(value);
-            else currentNode = currentNode->next = new Node(value);
-        }
-        tail_ = currentNode;
-        size_ = initList.size();
+    SingleList(std::initializer_list<T> initList) : AbstractList<valueType>() {
+        for (const auto& value : initList) insertLast(value);
     }
     SingleList(const SingleList& other) : AbstractList<valueType>() { copyFrom(other); }
     SingleList(SingleList&& other) noexcept : AbstractList<valueType>() { moveFrom(other); }
+    using AbstractList<T>::AbstractList; // Constructor with Initializer List
 
     SingleList& operator=(const SingleList& other) {
         if (this != &other) { copyFrom(other); }
@@ -45,10 +39,6 @@ public:
 
     ~SingleList() noexcept override { clear(); }
 
-    // Size:
-    sizeType size() const noexcept override { return size_; }
-    bool isEmpty() const noexcept override { return size_ == 0; }
-
     // Element Access:
     reference front() noexcept override { return head_->data; }
     constReference front() const noexcept override { return head_->data; }
@@ -58,108 +48,73 @@ public:
 
     reference operator[](const sizeType index) {
         assert(index < size_ && "SingleList::operator[] index out of range");
-        Node* currentNode = head_;
-        for (sizeType i = 0; i < index; ++i) currentNode = currentNode->next;
-        return currentNode->data;
+        return getNodeAt(index)->data;
     }
     constReference operator[](const sizeType index) const {
         assert(index < size_ && "SingleList::operator[] index out of range");
-        const Node* currentNode = head_;
-        for (sizeType i = 0; i < index; ++i) currentNode = currentNode->next;
-        return currentNode->data;
+        return getNodeAt(index)->data;
     }
 
     reference at(const sizeType index) override {
         if (index >= size_) throw std::out_of_range("SingleList::at");
-        Node* current = head_;
-        for (sizeType i = 0; i < index; ++i) current = current->next;
-        return current->data;
+        return (*this)[index];
     }
     constReference at(const sizeType index) const override {
         if (index >= size_) throw std::out_of_range("SingleList::at");
-        const Node* current = head_;
-        for (sizeType i = 0; i < index; ++i) current = current->next;
-        return current->data;
+        return (*this)[index];
     }
 
     // Modifiers:
-    void insertFirst(const valueType& value) override {
-        Node* newNode = new Node(value);
-        newNode->next = head_;
-        head_ = newNode;
-        if (!tail_) tail_ = newNode;
-        ++size_;
-    }
-    void insertLast(const valueType& value) override {
-        Node* newNode = new Node(value);
-        if (tail_) tail_->next = newNode;
-        else head_ = newNode;
-        tail_ = newNode;
-        ++size_;
-    }
     void insertAt(const sizeType index, const valueType& value) override {
         if (index > size_) return;
-        if (index == 0) return insertFirst(value);
-        if (index == size_) return insertLast(value);
         Node* newNode = new Node(value);
-        Node* currentNode = head_;
-        for (sizeType i = 0; i < index - 1; ++i) currentNode = currentNode->next;
-        newNode->next = currentNode->next;
-        currentNode->next = newNode;
+        if (index == 0) {
+            newNode->next = head_;
+            head_ = newNode;
+            if (!tail_) tail_ = newNode;
+        }
+        else if (index == size_) {
+            tail_->next = newNode;
+            tail_ = newNode;
+        }
+        else {
+            Node* prev = getNode(index - 1);
+            newNode->next = prev->next;
+            prev->next = newNode;
+        }
         ++size_;
     }
 
-    void removeFirst() noexcept override {
-        if (size_ == 0) return;
-        if (size_ == 1) {
-            delete head_;
-            head_ = tail_ = nullptr;
-        } else {
-            const Node* temp = head_;
-            head_ = head_->next;
-            delete temp;
-        }
-        --size_;
-    }
-    void removeLast() noexcept override {
-        if (size_ == 0) return;
-        if (size_ == 1) {
-            delete head_;
-            head_ = tail_ = nullptr;
-        } else {
-            Node* currentNode = head_;
-            while (currentNode->next->next) currentNode = currentNode->next;
-            const Node* temp = currentNode->next;
-            tail_ = currentNode;
-            tail_->next = nullptr;
-            delete temp;
-        }
-        --size_;
-    }
+    void removeFirst() noexcept override { removeAt(0); }
+    void removeLast() noexcept override { if (size_ > 0) removeAt(size_ - 1); }
     void removeAt(const sizeType index) noexcept override {
         if (index >= size_) return;
-        if (index == 0) return removeFirst();
-        if (index == size_ - 1) return removeLast();
-        Node* currentNode = head_;
-        for (sizeType i = 0; i < index - 1; ++i) currentNode = currentNode->next;
-        const Node* temp = currentNode->next;
-        currentNode->next = currentNode->next->next;
-        delete temp;
+        if (index == 0) {
+            const Node* target = head_;
+            head_ = head_->next;
+            if (size_ == 1) tail_ = nullptr;
+            delete target;
+        }
+        else {
+            const Node* prev = getNodeAt(index - 1);
+            const Node* target = prev->next;
+            prev->next = target->next;
+            if (target == tail_) tail_ = prev;
+            delete target;
+        }
         --size_;
     }
 
     void update(const sizeType index, const valueType& value) noexcept override {
         if (index >= size_) return;
-        Node* currentNode = head_;
-        for (sizeType i = 0; i < index; ++i) currentNode = currentNode->next;
-        currentNode->data = value;
+        getNodeAt(index)->data = value;
     }
     void clear() noexcept override {
         Node* currentNode = head_;
         while (currentNode) {
-            const Node* temp = currentNode;
+            const Node* target = currentNode;
             currentNode = currentNode->next;
-            delete temp;
+            delete target;
         }
         head_ = nullptr;
         tail_ = nullptr;
@@ -167,10 +122,12 @@ public:
     }
 
     // Comparison Operators:
-    bool operator==(const SingleList& other) const noexcept {
-        if (size_ != other.size_) return false;
+    bool operator==(const AbstractList<valueType>& other) const noexcept override {
+        const auto* otherList = dynamic_cast<const SingleList*>(&other);
+        if (!otherList) return false;
+        if (size_ != otherList->size_) return false;
         const Node* currentNode = head_;
-        const Node* otherNode = other.head_;
+        const Node* otherNode = other->head_;
         while (currentNode && otherNode) {
             if (currentNode->data != otherNode->data) return false;
             currentNode = currentNode->next;
@@ -178,10 +135,11 @@ public:
         }
         return true;
     }
-    bool operator!=(const SingleList& other) const noexcept { return !(*this == other); }
-    bool operator<(const SingleList& other) const noexcept {
+    bool operator<(const AbstractList<valueType>& other) const noexcept override {
+        const auto* otherList = dynamic_cast<const SingleList*>(&other);
+        if (!otherList) return false;
         const Node* currentNode = head_;
-        const Node* otherNode = other.head_;
+        const Node* otherNode = otherList->head_;
         while (currentNode && otherNode) {
             if (currentNode->data < otherNode->data) return true;
             if (currentNode->data > otherNode->data) return false;
@@ -190,9 +148,6 @@ public:
         }
         return currentNode == nullptr && otherNode != nullptr;
     }
-    bool operator>(const SingleList& other) const noexcept { return other < *this; }
-    bool operator<=(const SingleList& other) const noexcept { return !(other < *this); }
-    bool operator>=(const SingleList& other) const noexcept { return !(*this < other); }
 
     // Iterators:
     class iterator {
@@ -251,20 +206,19 @@ private:
 
     void copyFrom(const SingleList& other) {
         clear();
-        Node* currentNode = head_ = nullptr;
-        Node* otherNode = other.head_;
-        while (otherNode) {
-            if (!head_) head_ = currentNode = new Node(otherNode->data);
-            else currentNode = currentNode->next = new Node(otherNode->data);
-            otherNode = otherNode->next;
-        }
-        tail_ = currentNode;
-        size_ = other.size_;
+        for (const auto& value : other) { insertLast(value); }
     }
 
     void moveFrom(SingleList&& other) noexcept {
         head_ = std::exchange(other.head_, nullptr);
         tail_ = std::exchange(other.tail_, nullptr);
         size_ = std::exchange(other.size_, 0);
+    }
+
+    Node* getNodeAt(const sizeType index) const noexcept {
+        if (index >= size_) return nullptr;
+        Node* currentNode = head_;
+        for (sizeType i = 0; i < index; ++i) currentNode = currentNode->next;
+        return currentNode;
     }
 };
