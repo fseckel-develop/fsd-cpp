@@ -1,9 +1,10 @@
 // Created by Franz Seckel on 11.10.2025.
 #pragma once
-#include "AbstractList.h"
+#include <memory>
+#include <cassert>
 
 template <typename T>
-class SingleList final : public AbstractList<T> {
+class SingleList {
     struct Node {
         T data;
         Node* next = nullptr;
@@ -12,24 +13,23 @@ class SingleList final : public AbstractList<T> {
 
 public:
     // Aliases:
-    using typename AbstractList<T>::valueType;
-    using typename AbstractList<T>::sizeType;
-    using typename AbstractList<T>::reference;
-    using typename AbstractList<T>::constReference;
-    using typename AbstractList<T>::pointer;
-    using typename AbstractList<T>::constPointer;
+    using valueType = T;
+    using sizeType = size_t;
+    using reference = valueType&;
+    using constReference = const valueType&;
+    using pointer = valueType*;
+    using constPointer = const valueType*;
 
     // Constructors / Assignment / Destructor:
     SingleList() noexcept = default;
-    SingleList(std::initializer_list<T> initList) : AbstractList<valueType>() {
-        for (const auto& value : initList) insertLast(value);
+    SingleList(std::initializer_list<T> initList) {
+        for (const auto& value : initList) pushBack(value);
     }
-    SingleList(const SingleList& other) : AbstractList<valueType>() { copyFrom(other); }
-    SingleList(SingleList&& other) noexcept : AbstractList<valueType>() { moveFrom(other); }
-    using AbstractList<T>::AbstractList; // Constructor with Initializer List
+    SingleList(const SingleList& other) { copyFrom(other); }
+    SingleList(SingleList&& other) noexcept { moveFrom(other); }
 
     SingleList& operator=(const SingleList& other) {
-        if (this != &other) { copyFrom(other); }
+        if (this != &other) copyFrom(other);
         return *this;
     }
     SingleList& operator=(SingleList&& other) noexcept {
@@ -37,14 +37,18 @@ public:
         return *this;
     }
 
-    ~SingleList() noexcept override { clear(); }
+    ~SingleList() noexcept { clear(); }
+
+    // Capacity:
+    sizeType size() const noexcept { return size_; }
+    bool isEmpty() const noexcept { return size_ == 0; }
 
     // Element Access:
-    reference front() noexcept override { return head_->data; }
-    constReference front() const noexcept override { return head_->data; }
+    reference front() noexcept { return head_->data; }
+    constReference front() const noexcept { return head_->data; }
 
-    reference back() noexcept override  { return tail_->data; }
-    constReference back() const noexcept override { return tail_->data; }
+    reference back() noexcept { return tail_->data; }
+    constReference back() const noexcept { return tail_->data; }
 
     reference operator[](const sizeType index) {
         assert(index < size_ && "SingleList::operator[] index out of range");
@@ -55,18 +59,19 @@ public:
         return getNodeAt(index)->data;
     }
 
-    reference at(const sizeType index) override {
+    reference at(const sizeType index) {
         if (index >= size_) throw std::out_of_range("SingleList::at");
         return (*this)[index];
     }
-    constReference at(const sizeType index) const override {
+    constReference at(const sizeType index) const {
         if (index >= size_) throw std::out_of_range("SingleList::at");
         return (*this)[index];
     }
 
     // Modifiers:
-    void insertAt(const sizeType index, const valueType& value) override {
-        if (index > size_) return;
+    template <typename Universal>
+    void insertAt(const sizeType index, Universal&& value) {
+        if (index > size_) throw std::out_of_range("SingleList::insertAt");
         Node* newNode = new Node(value);
         if (index == 0) {
             newNode->next = head_;
@@ -78,17 +83,19 @@ public:
             tail_ = newNode;
         }
         else {
-            Node* prev = getNode(index - 1);
+            Node* prev = getNodeAt(index - 1);
             newNode->next = prev->next;
             prev->next = newNode;
         }
         ++size_;
     }
+    template <typename Universal>
+    void pushFront(Universal&& value) { insertAt(0, std::forward<Universal>(value)); }
+    template <typename Universal>
+    void pushBack(Universal&& value) { insertAt(size_, std::forward<Universal>(value)); }
 
-    void removeFirst() noexcept override { removeAt(0); }
-    void removeLast() noexcept override { if (size_ > 0) removeAt(size_ - 1); }
-    void removeAt(const sizeType index) noexcept override {
-        if (index >= size_) return;
+    void removeAt(const sizeType index) noexcept {
+        if (index >= size_) throw std::out_of_range("SingleList::removeAt");
         if (index == 0) {
             const Node* target = head_;
             head_ = head_->next;
@@ -104,12 +111,15 @@ public:
         }
         --size_;
     }
+    void popFront() noexcept { removeAt(0); }
+    void popBack() noexcept { removeAt(size_ - 1); }
 
-    void update(const sizeType index, const valueType& value) noexcept override {
-        if (index >= size_) return;
-        getNodeAt(index)->data = value;
+    template <typename Universal>
+    void update(const sizeType index, Universal&& value) noexcept {
+        if (index >= size_) throw std::out_of_range("SingleList::update");
+        getNodeAt(index)->data = std::forward<Universal>(value);
     }
-    void clear() noexcept override {
+    void clear() noexcept {
         Node* currentNode = head_;
         while (currentNode) {
             const Node* target = currentNode;
@@ -122,10 +132,8 @@ public:
     }
 
     // Comparison Operators:
-    bool operator==(const AbstractList<valueType>& other) const noexcept override {
-        const auto* otherList = dynamic_cast<const SingleList*>(&other);
-        if (!otherList) return false;
-        if (size_ != otherList->size_) return false;
+    bool operator==(const SingleList& other) const noexcept {
+        if (size_ != other->size_) return false;
         const Node* currentNode = head_;
         const Node* otherNode = other->head_;
         while (currentNode && otherNode) {
@@ -135,11 +143,9 @@ public:
         }
         return true;
     }
-    bool operator<(const AbstractList<valueType>& other) const noexcept override {
-        const auto* otherList = dynamic_cast<const SingleList*>(&other);
-        if (!otherList) return false;
+    bool operator<(const SingleList& other) const noexcept {
         const Node* currentNode = head_;
-        const Node* otherNode = otherList->head_;
+        const Node* otherNode = other->head_;
         while (currentNode && otherNode) {
             if (currentNode->data < otherNode->data) return true;
             if (currentNode->data > otherNode->data) return false;
@@ -148,6 +154,10 @@ public:
         }
         return currentNode == nullptr && otherNode != nullptr;
     }
+    bool operator!=(const SingleList& other) const noexcept { return !(*this == other); }
+    bool operator>(const SingleList& other) const noexcept { return other < *this; }
+    bool operator<=(const SingleList& other) const noexcept { return !(other < *this); }
+    bool operator>=(const SingleList& other) const noexcept { return !(*this < other); }
 
     // Iterators:
     class iterator {

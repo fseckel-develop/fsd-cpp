@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # setting header files
 set(HEADER_FILES
-        src/AbstractList.h
         src/Array.h
         src/DoubleList.h
         src/SingleList.h
