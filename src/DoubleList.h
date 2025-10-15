@@ -1,9 +1,10 @@
 // Created by Franz Seckel on 12.10.2025.
 #pragma once
-#include "AbstractList.h"
+#include <memory>
+#include <cassert>
 
 template<typename T>
-class DoubleList final : public AbstractList<T> {
+class DoubleList {
     struct Node {
         T data;
         Node* next = nullptr;
@@ -13,21 +14,20 @@ class DoubleList final : public AbstractList<T> {
 
 public:
     // Aliases:
-    using typename AbstractList<T>::valueType;
-    using typename AbstractList<T>::sizeType;
-    using typename AbstractList<T>::reference;
-    using typename AbstractList<T>::constReference;
-    using typename AbstractList<T>::pointer;
-    using typename AbstractList<T>::constPointer;
+    using valueType = T;
+    using sizeType = size_t;
+    using reference = valueType&;
+    using constReference = const valueType&;
+    using pointer = valueType*;
+    using constPointer = const valueType*;
 
     // Constructors / Assignment / Destructor:
     DoubleList() noexcept = default;
-    DoubleList(std::initializer_list<T> initList) : AbstractList<T>() {
-        for (const auto& value : initList) insertLast(value);
+    DoubleList(std::initializer_list<T> initList) {
+        for (const auto& value : initList) pushBack(value);
     }
-    DoubleList(const DoubleList& other) : AbstractList<valueType>() { copyFrom(other); }
-    DoubleList(DoubleList&& other) noexcept : AbstractList<valueType>() { moveFrom(std::move(other)); }
-    using AbstractList<T>::AbstractList; // Constructor with Initializer List
+    DoubleList(const DoubleList& other) { copyFrom(other); }
+    DoubleList(DoubleList&& other) noexcept { moveFrom(std::move(other)); }
 
     DoubleList& operator=(const DoubleList& other) {
         if (this != &other) copyFrom(other);
@@ -38,14 +38,18 @@ public:
         return *this;
     }
 
-    ~DoubleList() noexcept override { clear(); }
+    ~DoubleList() noexcept { clear(); }
+
+    // Capacity:
+    sizeType size() const noexcept { return size_; }
+    bool isEmpty() const noexcept { return size_ == 0; }
 
     // Element Access:
-    reference front() noexcept override { return head_->data; }
-    constReference front() const noexcept override { return head_->data; }
+    reference front() noexcept { return head_->data; }
+    constReference front() const noexcept { return head_->data; }
 
-    reference back() noexcept override { return tail_->data; }
-    constReference back() const noexcept override { return tail_->data; }
+    reference back() noexcept { return tail_->data; }
+    constReference back() const noexcept { return tail_->data; }
 
     reference operator[](const sizeType index) {
         assert(index < size_ && "DoubleList::operator[] index out of range");
@@ -56,19 +60,20 @@ public:
         return getNodeAt(index)->data;
     }
 
-    reference at(const sizeType index) override {
+    reference at(const sizeType index) {
         if (index >= size_) throw std::out_of_range("DoubleList::at");
         return (*this)[index];
     }
-    constReference at(const sizeType index) const override {
+    constReference at(const sizeType index) const {
         if (index >= size_) throw std::out_of_range("DoubleList::at");
         return (*this)[index];
     }
 
     // Modifiers:
-    void insertAt(const sizeType index, const valueType& value) override {
-        if (index > size_) return;
-        Node* newNode = new Node(value);
+    template <typename Universal>
+    void insertAt(const sizeType index, Universal&& value) {
+        if (index > size_) throw std::out_of_range("DoubleList::insertAt");
+        Node* newNode = new Node(std::forward<Universal>(value));
         if (index == 0) {
             newNode->next = head_;
             if (head_) head_->prev = newNode;
@@ -90,9 +95,13 @@ public:
         }
         ++size_;
     }
+    template <typename Universal>
+    void pushFront(Universal&& value) { insertAt(0, std::forward<Universal>(value)); }
+    template <typename Universal>
+    void pushBack(Universal&& value) { insertAt(size_, std::forward<Universal>(value)); }
 
-    void removeAt(const sizeType index) noexcept override {
-        if (index >= size_) return;
+    void removeAt(const sizeType index) noexcept {
+        if (index >= size_) throw std::out_of_range("DoubleList::removeAt");
         if (index == 0) {
             const Node* target = head_;
             head_ = head_->next;
@@ -115,12 +124,16 @@ public:
         }
         --size_;
     }
+    void popFront() noexcept { removeAt(0); }
+    void popBack() noexcept { removeAt(size_ - 1); }
 
-    void update(const sizeType index, const valueType& value) noexcept override {
-        if (index >= size_) return;
-        getNodeAt(index)->data = value;
+    template <typename Universal>
+    void update(const sizeType index, Universal&& value) noexcept {
+        if (index >= size_)  throw std::out_of_range("DoubleList::update");
+        getNodeAt(index)->data = std::forward<Universal>(value);
     }
-    void clear() noexcept override {
+
+    void clear() noexcept {
         Node* currentNode = head_;
         while (currentNode) {
             const Node* target = currentNode;
@@ -132,13 +145,11 @@ public:
         size_ = 0;
     }
 
-    // Comparison Operator:
-    bool operator==(const AbstractList<valueType>& other) const noexcept override {
-        const auto* otherList = dynamic_cast<const DoubleList*>(&other); // NOLINT
-        if (!otherList) return false;
-        if (size_ != otherList->size_) return false;
+    // Comparison Operators:
+    bool operator==(const DoubleList& other) const noexcept {
+        if (size_ != other->size_) return false;
         const Node* currentNode = head_;
-        const Node* otherNode = otherList->head_;
+        const Node* otherNode = other->head_;
         while (currentNode && otherNode) {
             if (currentNode->data != otherNode->data) return false;
             currentNode = currentNode->next;
@@ -146,11 +157,9 @@ public:
         }
         return true;
     }
-    bool operator<(const AbstractList<valueType>& other) const noexcept override {
-        const auto* otherList = dynamic_cast<const DoubleList*>(&other);
-        if (!otherList) return false;
+    bool operator<(const DoubleList& other) const noexcept {
         const Node* currentNode = head_;
-        const Node* otherNode = otherList->head_;
+        const Node* otherNode = other->head_;
         while (currentNode && otherNode) {
             if (currentNode->data < otherNode->data) return true;
             if (currentNode->data > otherNode->data) return false;
@@ -159,6 +168,10 @@ public:
         }
         return currentNode == nullptr && otherNode != nullptr;
     }
+    bool operator!=(const DoubleList& other) const noexcept { return !(*this == other); }
+    bool operator>(const DoubleList& other) const noexcept { return other < *this; }
+    bool operator<=(const DoubleList& other) const noexcept { return !(other < *this); }
+    bool operator>=(const DoubleList& other) const noexcept { return !(*this < other); }
 
     // Iterators:
     class iterator {
@@ -257,7 +270,7 @@ private:
 
     void copyFrom(const DoubleList& other) {
         clear();
-        for (const auto& value : other) { insertLast(value); }
+        for (const auto& value : other) { pushBack(value); }
     }
 
     void moveFrom(DoubleList&& other) noexcept {
