@@ -6,10 +6,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # setting header files
 set(HEADER_FILES
         src/Array.h
+        src/Deque.h
         src/DoubleList.h
         src/SingleList.h
+        src/Stack.h
         src/Vector.h
-        src/Deque.h
 )
 
 # setting source files
