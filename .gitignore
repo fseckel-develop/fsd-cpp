@@ -1,6 +1,8 @@
 # Custom excludes
 build
 
+*.gitignore
+
 # Prerequisites
 *.d
 
