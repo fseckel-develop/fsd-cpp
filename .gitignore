@@ -5,6 +5,8 @@ install
 
 *.gitignore
 
+*.gitignore
+
 # Prerequisites
 *.d
 
