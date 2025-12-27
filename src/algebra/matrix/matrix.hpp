@@ -78,4 +78,5 @@ namespace fs::math::algebra
                     rows[row][column] = *it++;
         }
     };
-}
+
+} // namespace fs::math::algebra

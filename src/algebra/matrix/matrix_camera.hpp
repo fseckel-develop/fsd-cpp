@@ -2,6 +2,7 @@
 #pragma once
 #include <cmath>
 #include "matrix_aliases.hpp"
+#include "algebra/vector/vector_aliases.hpp"
 
 namespace fs::math::algebra
 {
