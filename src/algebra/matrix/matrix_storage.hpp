@@ -1,7 +1,6 @@
 // Created by Franz Seckel on 19.12.2025.
 #pragma once
 #include <cstddef>
-#include "algebra/vector/vector_fwd.hpp"
 
 namespace fs::math::algebra::detail
 {
