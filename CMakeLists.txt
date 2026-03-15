@@ -1,40 +1,37 @@
-cmake_minimum_required(VERSION 4.00)
-project(cpp-core)
-
-# ------------------------------------------------------------------------------
-# Global C++ configuration
-# ------------------------------------------------------------------------------
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
-# ------------------------------------------------------------------------------
-# Header-only algebra library (INTERFACE target)
-# ------------------------------------------------------------------------------
-
-add_library(fs_math_algebra INTERFACE)
-
-target_include_directories(fs_math_algebra INTERFACE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+cmake_minimum_required(VERSION 3.25)
+project(fsd-cpp
+        VERSION 0.1.0
+        DESCRIPTION "Modern C++ library for data structures, algorithms, mathematical types and operations"
+        LANGUAGES CXX
 )
 
-target_compile_features(fs_math_algebra INTERFACE cxx_std_20)
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
-# ------------------------------------------------------------------------------
-# Compiler warnings (library consumers inherit these)
-# ------------------------------------------------------------------------------
+option(FSD_BUILD_EXAMPLES "Build fsd-cpp examples" ON)
+option(FSD_BUILD_TESTS "Build fsd-cpp tests" OFF)
+
+add_library(fsd INTERFACE)
+add_library(fsd::fsd ALIAS fsd)
+
+target_compile_features(fsd INTERFACE cxx_std_20)
+
+target_include_directories(fsd
+        INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
 
 if (MSVC)
-    target_compile_options(fs_math_algebra INTERFACE
+    target_compile_options(fsd INTERFACE
             /W4
             /permissive-
-            /we4265   # non-virtual dtor with virtuals
-            /we5204   # virtual dtor rule
-            /wd4100   # unused parameter
+            /we4265
+            /we5204
+            /wd4100
     )
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(fs_math_algebra INTERFACE
+    target_compile_options(fsd INTERFACE
             -Wall
             -Wextra
             -Wpedantic
@@ -44,7 +41,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
             -Wunused-variable
     )
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    target_compile_options(fs_math_algebra INTERFACE
+    target_compile_options(fsd INTERFACE
             -Wall
             -Wextra
             -Wpedantic
@@ -55,61 +52,39 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     )
 endif()
 
-# ------------------------------------------------------------------------------
-# Example / test executable
-# ------------------------------------------------------------------------------
-
-# setting header files
-set(HEADER_FILES
-        src/Array.h
-        src/BinaryTree.h
-        src/Deque.h
-        src/DoubleList.h
-        src/Queue.h
-        src/SearchTree.h
-        src/SingleList.h
-        src/Stack.h
-        src/Vector.h
-)
-
-# setting source files
-set(SOURCE_FILES
-        main.cpp
-)
-
-# adding main executable
-add_executable(cpp-core
-        main.cpp
-        ${HEADER_FILES}
-        ${SOURCE_FILES}
-)
-
-# ------------------------------------------------------------------------------
-# Platform-specific configuration
-# ------------------------------------------------------------------------------
-
-if (APPLE)
-    target_compile_options(fs_math_example PRIVATE
-            -Wno-deprecated-declarations
-    )
-
-    find_library(COCOA_FRAMEWORK Cocoa REQUIRED)
-    find_library(IOKIT_FRAMEWORK IOKit REQUIRED)
-    find_library(COREFOUNDATION_FRAMEWORK CoreFoundation REQUIRED)
-    find_library(COREVIDEO_FRAMEWORK CoreVideo REQUIRED)
-
-    target_link_libraries(fs_math_example PRIVATE
-            ${COCOA_FRAMEWORK}
-            ${IOKIT_FRAMEWORK}
-            ${COREFOUNDATION_FRAMEWORK}
-            ${COREVIDEO_FRAMEWORK}
-    )
+if (FSD_BUILD_EXAMPLES)
+    add_executable(fsd-example examples/main.cpp)
+    target_link_libraries(fsd-example PRIVATE fsd::fsd)
 endif()
 
-# ------------------------------------------------------------------------------
-# Status output
-# ------------------------------------------------------------------------------
+install(TARGETS fsd
+        EXPORT fsdTargets
+)
 
-message(STATUS "Compiler:     ${CMAKE_CXX_COMPILER_ID}")
-message(STATUS "C++ Standard: C++${CMAKE_CXX_STANDARD}")
-message(STATUS "Build type:   ${CMAKE_BUILD_TYPE}")
+install(DIRECTORY include/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(EXPORT fsdTargets
+        FILE fsdTargets.cmake
+        NAMESPACE fsd::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fsd
+)
+
+configure_package_config_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/fsdConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/fsdConfig.cmake
+        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fsd
+)
+
+write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/fsdConfigVersion.cmake
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/fsdConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/fsdConfigVersion.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fsd
+)
