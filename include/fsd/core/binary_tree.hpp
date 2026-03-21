@@ -1,6 +1,8 @@
 // Created by Franz Seckel on 04.11.2025.
 #pragma once
 #include <iostream>
+#include <utility>
+#include <algorithm>
 #include <fsd/core/queue.hpp>
 #include <fsd/core/stack.hpp>
 

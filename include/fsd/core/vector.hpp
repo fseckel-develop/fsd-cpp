@@ -1,6 +1,9 @@
 // Created by Franz Seckel on 08.10.2025.
 #pragma once
 #include <algorithm>
+#include <memory>
+#include <utility>
+#include <stdexcept>
 
 namespace fsd::core
 {
