@@ -2,6 +2,7 @@
 #pragma once
 #include <cassert>
 #include <algorithm>
+#include <stdexcept>
 
 namespace fsd::core
 {

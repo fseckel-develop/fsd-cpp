@@ -3,8 +3,9 @@
 ![Language](https://img.shields.io/badge/Language-C%2B%2B%2020-orange)
 ![CMake](https://img.shields.io/badge/Build-CMake%203.25+-blue)
 ![Tests](https://img.shields.io/badge/Tests-doctest-green)
-![Status](https://img.shields.io/badge/Status-Active%20Development-yellow)
+![Status](https://img.shields.io/badge/Status-Active%20Development-purple)
 ![Platform](https://img.shields.io/badge/Platform-cross--platform-lightgrey)
+![CI](https://img.shields.io/badge/CI-GitHub%20Actions-yellow)
 
 A modern C++ library for data structures, algorithms, mathematical types and operations.  
 `fsd-cpp` unifies two main domains:
