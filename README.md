@@ -3,9 +3,9 @@
 ![Language](https://img.shields.io/badge/Language-C%2B%2B%2020-orange)
 ![CMake](https://img.shields.io/badge/Build-CMake%203.25+-blue)
 ![Tests](https://img.shields.io/badge/Tests-doctest-green)
-![Status](https://img.shields.io/badge/Status-Active%20Development-purple)
-![Platform](https://img.shields.io/badge/Platform-cross--platform-lightgrey)
-![CI](https://img.shields.io/badge/CI-GitHub%20Actions-yellow)
+![Status](https://img.shields.io/badge/Status-Active%20Development-yellow)
+![Platform](https://img.shields.io/badge/Platform-cross--platform-purple)
+[![CI](https://github.com/fseckel-develop/fsd-structura-library/actions/workflows/ci.yml/badge.svg)](https://github.com/fseckel-develop/fsd-structura-library/actions/workflows/ci.yml)
 
 A modern C++ library for data structures, algorithms, mathematical types and operations.  
 `fsd-cpp` unifies two main domains:
@@ -23,30 +23,24 @@ This project is under active refactoring and continuous development.
 ---
 ## ⚙️ Build and Install
 
-Requirements:
+#### Requirements:
 - CMake ≥ 3.25
 - C++20 compatible compiler (Clang, GCC, MSVC)
 
-Configure:
+#### Build:
 ```shell
 cmake -S . -B build
-```
-
-Build:
-```shell
 cmake --build build
 ```
 
-Install:
+#### Install:
 ```shell
 cmake --install build --prefix install
 ```
+This installs public headers under `include/` and CMake package configuration for downstream usage.
 
-This installs:
-- public headers under include/
-- CMake package configuration for downstream usage
-
-Once done, the library can be integrated using CMake:
+#### Integration:
+Once installed, the library can be integrated using CMake:
 ```cmake
 find_package(fsd REQUIRED)
 target_link_libraries(your_target PRIVATE fsd::fsd)
@@ -88,7 +82,7 @@ target_link_libraries(your_target PRIVATE fsd::fsd)
 ---
 ## 🧩 Modules
 
-### core/
+#### `core/`:
 
 Fundamental data structures and algorithmic building blocks.
 
@@ -103,7 +97,8 @@ Planned extensions:
 - graph data structures and algorithms
 - traversal and utility abstractions
 
-### math/algebra/
+
+#### `math/algebra/`:
 
 Linear algebra and related mathematical structures.
 
@@ -122,9 +117,10 @@ Design:
 - separation into storage, operations, algorithms, and aliases
 - modular, composable headers
 
-### math/geometry/
 
-Geometric primitives and operations.
+#### `math/geometry/`:
+
+Geometric primitives, higher-level shapes, algorithms, and transformations.
 
 Includes:
 - point
@@ -135,19 +131,16 @@ Planned extensions:
 - algorithms (intersection, containment, distance, area, centroid, convex hull, …)
 - transforms (translation, rotation, scaling, projection)
 
-Architecturally, the module distinguishes between geometric primitives, higher-level shapes, algorithms, and transformations.
 
-### math/analysis/
+#### `math/analysis/`:
 
-Numerical and functional analysis tools for evaluating and transforming functions.
+Numerical analysis tools for evaluating and transforming functions.
 
 Planned extensions:
 - differentiation (numerical and symbolic)
 - integration (trapezoidal, Simpson, adaptive methods)
 - series expansions (Taylor series)
 - transforms (Fourier transform and related methods)
-
-The module is intended to combine a high-level representation of mathematical functions with efficient numerical algorithms.
 
 Initial focus:
 - numerical differentiation and integration
@@ -171,21 +164,24 @@ A key design goal is to separate concepts across domains — for example, a math
 ## 🧪 Testing
 
 The project uses a lightweight test setup based on **`doctest`**.
+- Tests are located in the `tests/` directory
+- Test cases are grouped by module (e.g. `core/`, `math/`)
+- Doctest supports filtering, tagging, and fine-grained execution
 
-Build tests:
+#### Build tests:
 ```shell
 cmake -S . -B build -DFSD_BUILD_TESTS=ON
 cmake --build build
 ```
 
-Run tests via `ctest`:
+#### Run tests via `ctest`:
 ```shell
 ctest --test-dir build
 # OR
 ctest --test-dir build -V    # verbose output (shows individual test cases)
 ```
 
-Run tests via `fsd-tests` executable:
+#### Run tests via `fsd-tests` executable:
 ```shell
 ./build/tests/fsd-tests
 # OR
@@ -195,11 +191,6 @@ Run tests via `fsd-tests` executable:
 # OR
 ./build/tests/fsd-tests --list-test-cases   # list all test cases
 ```
-
-Notes:
-- Tests are located in the `tests/` directory
-- Test cases are grouped by module (e.g. `core/`, `math/`)
-- Doctest supports filtering, tagging, and fine-grained execution
 
 ---
 ## 🎯 Purpose
