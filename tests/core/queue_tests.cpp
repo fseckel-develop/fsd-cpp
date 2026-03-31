@@ -1,16 +1,17 @@
 // Created by Franz Seckel on 17.03.2026.
 #include <doctest.h>
-#include <fsd/core/queue.hpp>
+#include <structura/core/queue.hpp>
+
 
 TEST_CASE("Queue: default construction creates empty queue") {
-    fsd::core::Queue<int> q;
+    structura::core::Queue<int> q;
 
     CHECK(q.size() == 0);
     CHECK(q.empty());
 }
 
 TEST_CASE("Queue: enqueue() adds elements to the back") {
-    fsd::core::Queue<int> q;
+    structura::core::Queue<int> q;
 
     q.enqueue(10);
     q.enqueue(20);
@@ -22,7 +23,7 @@ TEST_CASE("Queue: enqueue() adds elements to the back") {
 }
 
 TEST_CASE("Queue: dequeue() removes elements from the front") {
-    fsd::core::Queue<int> q;
+    structura::core::Queue<int> q;
 
     q.enqueue(10);
     q.enqueue(20);
@@ -35,7 +36,7 @@ TEST_CASE("Queue: dequeue() removes elements from the front") {
 }
 
 TEST_CASE("Queue: maintains FIFO order") {
-    fsd::core::Queue<int> q;
+    structura::core::Queue<int> q;
 
     q.enqueue(1);
     q.enqueue(2);
@@ -49,8 +50,8 @@ TEST_CASE("Queue: maintains FIFO order") {
 }
 
 TEST_CASE("Queue: swap() exchanges contents") {
-    fsd::core::Queue<int> a;
-    fsd::core::Queue<int> b;
+    structura::core::Queue<int> a;
+    structura::core::Queue<int> b;
 
     a.enqueue(1);
     a.enqueue(2);

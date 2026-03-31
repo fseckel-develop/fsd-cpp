@@ -1,13 +1,11 @@
 // Created by Franz Seckel on 17.12.2025.
+#include <structura/math/algebra/matrix.hpp>
+#include <structura/math/geometry/point.hpp>
 #include <iostream>
 
-#include "../include/fsd/core/binary_tree.hpp"
-#include "../include/fsd/math/algebra/vector.hpp"
-#include "../include/fsd/math/algebra/matrix.hpp"
-#include "../include/fsd/math/geometry/point.hpp"
+using namespace structura::math::algebra;
+using namespace structura::math::geometry;
 
-using namespace fsd::math::algebra;
-using namespace fsd::math::geometry;
 
 int main() {
     constexpr Vector3 translation = {1.0f, 2.0f, 3.0f};

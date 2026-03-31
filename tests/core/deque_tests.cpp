@@ -1,16 +1,17 @@
 // Created by Franz Seckel on 17.03.2026.
 #include <doctest.h>
-#include <fsd/core/deque.hpp>
+#include <structura/core/deque.hpp>
+
 
 TEST_CASE("Deque: default construction creates empty deque") {
-    fsd::core::Deque<int> d;
+    structura::core::Deque<int> d;
 
     CHECK(d.size() == 0);
     CHECK(d.empty());
 }
 
 TEST_CASE("Deque: initializer_list constructor preserves element order") {
-    fsd::core::Deque<int> d{1, 2, 3};
+    structura::core::Deque<int> d{1, 2, 3};
 
     CHECK(d.size() == 3);
     CHECK_FALSE(d.empty());
@@ -22,7 +23,7 @@ TEST_CASE("Deque: initializer_list constructor preserves element order") {
 }
 
 TEST_CASE("Deque: pushBack() appends elements to the back") {
-    fsd::core::Deque<int> d;
+    structura::core::Deque<int> d;
 
     d.pushBack(10);
     d.pushBack(20);
@@ -37,7 +38,7 @@ TEST_CASE("Deque: pushBack() appends elements to the back") {
 }
 
 TEST_CASE("Deque: pushFront() prepends elements to the front") {
-    fsd::core::Deque<int> d;
+    structura::core::Deque<int> d;
 
     d.pushFront(10);
     d.pushFront(20);
@@ -52,7 +53,7 @@ TEST_CASE("Deque: pushFront() prepends elements to the front") {
 }
 
 TEST_CASE("Deque: pushFront() and pushBack() support mixed insertion order") {
-    fsd::core::Deque<int> d;
+    structura::core::Deque<int> d;
 
     d.pushBack(2);
     d.pushBack(3);
@@ -71,7 +72,7 @@ TEST_CASE("Deque: pushFront() and pushBack() support mixed insertion order") {
 }
 
 TEST_CASE("Deque: popFront() removes elements from the front") {
-    fsd::core::Deque<int> d{1, 2, 3};
+    structura::core::Deque<int> d{1, 2, 3};
 
     d.popFront();
 
@@ -83,7 +84,7 @@ TEST_CASE("Deque: popFront() removes elements from the front") {
 }
 
 TEST_CASE("Deque: popBack() removes elements from the back") {
-    fsd::core::Deque<int> d{1, 2, 3};
+    structura::core::Deque<int> d{1, 2, 3};
 
     d.popBack();
 
@@ -95,7 +96,7 @@ TEST_CASE("Deque: popBack() removes elements from the back") {
 }
 
 TEST_CASE("Deque: popFront() and popBack() on empty deque leave it unchanged") {
-    fsd::core::Deque<int> d;
+    structura::core::Deque<int> d;
 
     d.popFront();
     d.popBack();
@@ -105,7 +106,7 @@ TEST_CASE("Deque: popFront() and popBack() on empty deque leave it unchanged") {
 }
 
 TEST_CASE("Deque: at() throws on out-of-bounds access") {
-    fsd::core::Deque<int> d{1, 2, 3};
+    structura::core::Deque<int> d{1, 2, 3};
 
     CHECK_NOTHROW(d.at(0));
     CHECK_NOTHROW(d.at(2));
@@ -113,7 +114,7 @@ TEST_CASE("Deque: at() throws on out-of-bounds access") {
 }
 
 TEST_CASE("Deque: clear() removes all elements") {
-    fsd::core::Deque<int> d{1, 2, 3, 4};
+    structura::core::Deque<int> d{1, 2, 3, 4};
 
     d.clear();
 
@@ -122,8 +123,8 @@ TEST_CASE("Deque: clear() removes all elements") {
 }
 
 TEST_CASE("Deque: copy construction creates equal independent copy") {
-    fsd::core::Deque<int> original{1, 2, 3};
-    fsd::core::Deque<int> copy(original);
+    structura::core::Deque<int> original{1, 2, 3};
+    structura::core::Deque<int> copy(original);
 
     CHECK(copy == original);
 
@@ -138,9 +139,9 @@ TEST_CASE("Deque: copy construction creates equal independent copy") {
 }
 
 TEST_CASE("Deque: move construction transfers contents") {
-    fsd::core::Deque<int> original{1, 2, 3};
+    structura::core::Deque<int> original{1, 2, 3};
 
-    fsd::core::Deque<int> moved(std::move(original));
+    structura::core::Deque<int> moved(std::move(original));
 
     CHECK(moved.size() == 3);
     CHECK(moved.front() == 1);
@@ -151,8 +152,8 @@ TEST_CASE("Deque: move construction transfers contents") {
 }
 
 TEST_CASE("Deque: swap() exchanges contents") {
-    fsd::core::Deque<int> a{1, 2, 3};
-    fsd::core::Deque<int> b{10, 20};
+    structura::core::Deque<int> a{1, 2, 3};
+    structura::core::Deque<int> b{10, 20};
 
     a.swap(b);
 
@@ -166,7 +167,7 @@ TEST_CASE("Deque: swap() exchanges contents") {
 }
 
 TEST_CASE("Deque: iterators traverse elements in forward order") {
-    fsd::core::Deque<int> d{1, 2, 3, 4};
+    structura::core::Deque<int> d{1, 2, 3, 4};
 
     int expected = 1;
     for (auto it = d.begin(); it != d.end(); ++it) {
@@ -176,7 +177,7 @@ TEST_CASE("Deque: iterators traverse elements in forward order") {
 }
 
 TEST_CASE("Deque: reverse iterators traverse elements in reverse order") {
-    fsd::core::Deque<int> d{1, 2, 3, 4};
+    structura::core::Deque<int> d{1, 2, 3, 4};
 
     int expected = 4;
     for (auto it = d.rbegin(); it != d.rend(); ++it) {
@@ -186,9 +187,9 @@ TEST_CASE("Deque: reverse iterators traverse elements in reverse order") {
 }
 
 TEST_CASE("Deque: comparison operators are lexicographical") {
-    fsd::core::Deque<int> a{1, 2, 3};
-    fsd::core::Deque<int> b{1, 2, 3};
-    fsd::core::Deque<int> c{1, 2, 4};
+    structura::core::Deque<int> a{1, 2, 3};
+    structura::core::Deque<int> b{1, 2, 3};
+    structura::core::Deque<int> c{1, 2, 4};
 
     CHECK(a == b);
     CHECK(a != c);

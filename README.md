@@ -1,4 +1,4 @@
-# 🚀 fsd-cpp
+# 🚀 fsd-structura-library
 
 ![Language](https://img.shields.io/badge/Language-C%2B%2B%2020-orange)
 ![CMake](https://img.shields.io/badge/Build-CMake%203.25+-blue)
@@ -7,8 +7,8 @@
 ![Platform](https://img.shields.io/badge/Platform-cross--platform-purple)
 [![CI](https://github.com/fseckel-develop/fsd-structura-library/actions/workflows/ci.yml/badge.svg)](https://github.com/fseckel-develop/fsd-structura-library/actions/workflows/ci.yml)
 
-A modern C++ library for data structures, algorithms, mathematical types and operations.  
-`fsd-cpp` unifies two main domains:
+**`structura`** is a modern C++ library for data structures, algorithms, mathematical types and operations.  
+It unifies two main domains:
 
 - **Core** — classical data structures and general-purpose algorithms  
 - **Math** — algebraic, analytic, and geometric types and operations  
@@ -42,8 +42,8 @@ This installs public headers under `include/` and CMake package configuration fo
 #### Integration:
 Once installed, the library can be integrated using CMake:
 ```cmake
-find_package(fsd REQUIRED)
-target_link_libraries(your_target PRIVATE fsd::fsd)
+find_package(structura REQUIRED)
+target_link_libraries(your_target PRIVATE structura::structura)
 ```
 
 ---
@@ -55,7 +55,7 @@ target_link_libraries(your_target PRIVATE fsd::fsd)
 ├── README.md
 ├── LICENSE
 ├── include/
-│   └── fsd/
+│   └── structura/
 │       ├── core/
 │       │   ├── Array
 │       │   ├── BinaryTree
@@ -170,7 +170,7 @@ The project uses a lightweight test setup based on **`doctest`**.
 
 #### Build tests:
 ```shell
-cmake -S . -B build -DFSD_BUILD_TESTS=ON
+cmake -S . -B build -DSTRUCTURA_BUILD_TESTS=ON
 cmake --build build
 ```
 
@@ -181,15 +181,15 @@ ctest --test-dir build
 ctest --test-dir build -V    # verbose output (shows individual test cases)
 ```
 
-#### Run tests via `fsd-tests` executable:
+#### Run tests via `structura-tests` executable:
 ```shell
-./build/tests/fsd-tests
+./build/tests/structura-tests
 # OR
-./build/tests/fsd-tests -s                  # show all test cases
+./build/tests/structura-tests -s                  # show all test cases
 # OR
-./build/tests/fsd-tests -tc="Vector*"       # run only tests matching "Vector"
+./build/tests/structura-tests -tc="Vector*"       # run only tests matching "Vector"
 # OR
-./build/tests/fsd-tests --list-test-cases   # list all test cases
+./build/tests/structura-tests --list-test-cases   # list all test cases
 ```
 
 ---

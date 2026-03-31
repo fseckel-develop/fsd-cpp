@@ -1,9 +1,10 @@
 // Created by Franz Seckel on 17.03.2026.
 #include <doctest.h>
-#include <fsd/core/single_list.hpp>
+#include <structura/core/single_list.hpp>
+
 
 TEST_CASE("SingleList: default construction creates empty list") {
-    fsd::core::SingleList<int> list;
+    structura::core::SingleList<int> list;
 
     CHECK(list.size() == 0);
     CHECK(list.empty());
@@ -11,7 +12,7 @@ TEST_CASE("SingleList: default construction creates empty list") {
 }
 
 TEST_CASE("SingleList: initializer_list constructor preserves element order") {
-    fsd::core::SingleList<int> list{1, 2, 3};
+    structura::core::SingleList<int> list{1, 2, 3};
 
     CHECK(list.size() == 3);
     CHECK_FALSE(list.empty());
@@ -23,7 +24,7 @@ TEST_CASE("SingleList: initializer_list constructor preserves element order") {
 }
 
 TEST_CASE("SingleList: pushFront() prepends elements to the front") {
-    fsd::core::SingleList<int> list;
+    structura::core::SingleList<int> list;
 
     list.pushFront(10);
     list.pushFront(20);
@@ -38,7 +39,7 @@ TEST_CASE("SingleList: pushFront() prepends elements to the front") {
 }
 
 TEST_CASE("SingleList: pushBack() appends elements to the back") {
-    fsd::core::SingleList<int> list;
+    structura::core::SingleList<int> list;
 
     list.pushBack(10);
     list.pushBack(20);
@@ -53,7 +54,7 @@ TEST_CASE("SingleList: pushBack() appends elements to the back") {
 }
 
 TEST_CASE("SingleList: insertAt() inserts element at arbitrary position") {
-    fsd::core::SingleList<int> list{1, 3, 4};
+    structura::core::SingleList<int> list{1, 3, 4};
 
     list.insertAt(1, 2);
 
@@ -65,7 +66,7 @@ TEST_CASE("SingleList: insertAt() inserts element at arbitrary position") {
 }
 
 TEST_CASE("SingleList: removeAt() removes element and links remaining nodes") {
-    fsd::core::SingleList<int> list{1, 2, 3, 4};
+    structura::core::SingleList<int> list{1, 2, 3, 4};
 
     list.removeAt(1);
 
@@ -78,7 +79,7 @@ TEST_CASE("SingleList: removeAt() removes element and links remaining nodes") {
 }
 
 TEST_CASE("SingleList: popFront() removes the first element") {
-    fsd::core::SingleList<int> list{1, 2, 3};
+    structura::core::SingleList<int> list{1, 2, 3};
 
     list.popFront();
 
@@ -90,7 +91,7 @@ TEST_CASE("SingleList: popFront() removes the first element") {
 }
 
 TEST_CASE("SingleList: popBack() removes the last element") {
-    fsd::core::SingleList<int> list{1, 2, 3};
+    structura::core::SingleList<int> list{1, 2, 3};
 
     list.popBack();
 
@@ -102,7 +103,7 @@ TEST_CASE("SingleList: popBack() removes the last element") {
 }
 
 TEST_CASE("SingleList: at() throws on out-of-bounds access") {
-    fsd::core::SingleList<int> list{1, 2, 3};
+    structura::core::SingleList<int> list{1, 2, 3};
 
     CHECK_NOTHROW(list.at(0));
     CHECK_NOTHROW(list.at(2));
@@ -110,7 +111,7 @@ TEST_CASE("SingleList: at() throws on out-of-bounds access") {
 }
 
 TEST_CASE("SingleList: update() replaces value at given index") {
-    fsd::core::SingleList<int> list{1, 2, 3};
+    structura::core::SingleList<int> list{1, 2, 3};
 
     list.update(1, 99);
 
@@ -121,7 +122,7 @@ TEST_CASE("SingleList: update() replaces value at given index") {
 }
 
 TEST_CASE("SingleList: clear() removes all elements") {
-    fsd::core::SingleList<int> list{1, 2, 3, 4};
+    structura::core::SingleList<int> list{1, 2, 3, 4};
 
     list.clear();
 
@@ -131,8 +132,8 @@ TEST_CASE("SingleList: clear() removes all elements") {
 }
 
 TEST_CASE("SingleList: copy construction creates equal independent copy") {
-    fsd::core::SingleList<int> original{1, 2, 3};
-    fsd::core::SingleList<int> copy(original);
+    structura::core::SingleList<int> original{1, 2, 3};
+    structura::core::SingleList<int> copy(original);
 
     CHECK(copy == original);
 
@@ -144,9 +145,9 @@ TEST_CASE("SingleList: copy construction creates equal independent copy") {
 }
 
 TEST_CASE("SingleList: move construction transfers contents") {
-    fsd::core::SingleList<int> original{1, 2, 3};
+    structura::core::SingleList<int> original{1, 2, 3};
 
-    fsd::core::SingleList<int> moved(std::move(original));
+    structura::core::SingleList<int> moved(std::move(original));
 
     CHECK(moved.size() == 3);
     CHECK(moved.front() == 1);
@@ -160,7 +161,7 @@ TEST_CASE("SingleList: move construction transfers contents") {
 }
 
 TEST_CASE("SingleList: find() returns iterator to matching element or end()") {
-    fsd::core::SingleList<int> list{5, 10, 15};
+    structura::core::SingleList<int> list{5, 10, 15};
 
     auto it = list.find(10);
     auto missing = list.find(99);
@@ -171,7 +172,7 @@ TEST_CASE("SingleList: find() returns iterator to matching element or end()") {
 }
 
 TEST_CASE("SingleList: iterators traverse elements in forward order") {
-    fsd::core::SingleList<int> list{1, 2, 3, 4};
+    structura::core::SingleList<int> list{1, 2, 3, 4};
 
     int expected = 1;
     for (auto it = list.begin(); it != list.end(); ++it) {
@@ -181,9 +182,9 @@ TEST_CASE("SingleList: iterators traverse elements in forward order") {
 }
 
 TEST_CASE("SingleList: comparison operators are lexicographical") {
-    fsd::core::SingleList<int> a{1, 2, 3};
-    fsd::core::SingleList<int> b{1, 2, 3};
-    fsd::core::SingleList<int> c{1, 2, 4};
+    structura::core::SingleList<int> a{1, 2, 3};
+    structura::core::SingleList<int> b{1, 2, 3};
+    structura::core::SingleList<int> c{1, 2, 4};
 
     CHECK(a == b);
     CHECK(a != c);

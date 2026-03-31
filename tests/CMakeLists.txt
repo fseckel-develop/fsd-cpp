@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.25)
-project(fsd-tests)
+project(structura-tests)
 
-add_executable(fsd-tests
+add_executable(structura-tests
         test_main.cpp
         core/array_tests.cpp
         core/binary_tree_tests.cpp
@@ -14,9 +14,9 @@ add_executable(fsd-tests
         core/vector_tests.cpp
 )
 
-target_link_libraries(fsd-tests PRIVATE
-        fsd::fsd
+target_link_libraries(structura-tests PRIVATE
+        structura::structura
         doctest
 )
 
-add_test(NAME fsd-tests COMMAND fsd-tests)
+add_test(NAME structura-tests COMMAND structura-tests)

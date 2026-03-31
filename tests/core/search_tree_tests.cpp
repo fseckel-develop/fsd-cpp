@@ -1,9 +1,10 @@
 // Created by Franz Seckel on 18.03.2026.
 #include <doctest.h>
-#include <fsd/core/search_tree.hpp>
+#include <structura/core/search_tree.hpp>
+
 
 TEST_CASE("SearchTree: default construction creates empty tree") {
-    fsd::core::SearchTree<int> tree;
+    structura::core::SearchTree<int> tree;
 
     CHECK(tree.size() == 0);
     CHECK(tree.empty());
@@ -12,7 +13,7 @@ TEST_CASE("SearchTree: default construction creates empty tree") {
 }
 
 TEST_CASE("SearchTree: insert() preserves binary search tree ordering") {
-    fsd::core::SearchTree<int> tree;
+    structura::core::SearchTree<int> tree;
 
     tree.insert(4);
     tree.insert(2);
@@ -35,7 +36,7 @@ TEST_CASE("SearchTree: insert() preserves binary search tree ordering") {
 }
 
 TEST_CASE("SearchTree: insert() ignores duplicate values") {
-    fsd::core::SearchTree<int> tree;
+    structura::core::SearchTree<int> tree;
 
     tree.insert(4);
     tree.insert(2);
@@ -53,7 +54,7 @@ TEST_CASE("SearchTree: insert() ignores duplicate values") {
 }
 
 TEST_CASE("SearchTree: search() returns true for inserted values and false otherwise") {
-    fsd::core::SearchTree<int> tree;
+    structura::core::SearchTree<int> tree;
 
     tree.insert(4);
     tree.insert(2);
@@ -66,7 +67,7 @@ TEST_CASE("SearchTree: search() returns true for inserted values and false other
 }
 
 TEST_CASE("SearchTree: min() returns smallest value") {
-    fsd::core::SearchTree<int> tree;
+    structura::core::SearchTree<int> tree;
 
     tree.insert(4);
     tree.insert(2);
@@ -78,7 +79,7 @@ TEST_CASE("SearchTree: min() returns smallest value") {
 }
 
 TEST_CASE("SearchTree: max() returns largest value") {
-    fsd::core::SearchTree<int> tree;
+    structura::core::SearchTree<int> tree;
 
     tree.insert(4);
     tree.insert(2);
@@ -90,14 +91,14 @@ TEST_CASE("SearchTree: max() returns largest value") {
 }
 
 TEST_CASE("SearchTree: min() and max() throw on empty tree") {
-    fsd::core::SearchTree<int> tree;
+    structura::core::SearchTree<int> tree;
 
     CHECK_THROWS_AS(tree.min(), std::invalid_argument);
     CHECK_THROWS_AS(tree.max(), std::invalid_argument);
 }
 
 TEST_CASE("SearchTree: find() returns iterator to matching value or end()") {
-    fsd::core::SearchTree<int> tree;
+    structura::core::SearchTree<int> tree;
 
     tree.insert(4);
     tree.insert(2);
@@ -114,7 +115,7 @@ TEST_CASE("SearchTree: find() returns iterator to matching value or end()") {
 // NOTE(fsd): lowerBound() returns a traversal iterator, not a true node iterator.
 // See iterator TODO in BinaryTree.
 TEST_CASE("SearchTree: lowerBound() returns first element not less than value" * doctest::skip(true)) {
-    fsd::core::SearchTree<int> tree;
+    structura::core::SearchTree<int> tree;
 
     tree.insert(10);
     tree.insert(5);
@@ -140,7 +141,7 @@ TEST_CASE("SearchTree: lowerBound() returns first element not less than value" *
 // NOTE(fsd): upperBound() returns a traversal iterator, not a true node iterator.
 // See iterator TODO in BinaryTree.
 TEST_CASE("SearchTree: upperBound() returns first element greater than value" * doctest::skip(true)) {
-    fsd::core::SearchTree<int> tree;
+    structura::core::SearchTree<int> tree;
 
     tree.insert(10);
     tree.insert(5);
@@ -164,7 +165,7 @@ TEST_CASE("SearchTree: upperBound() returns first element greater than value" * 
 }
 
 TEST_CASE("SearchTree: remove() deletes leaf node") {
-    fsd::core::SearchTree<int> tree;
+    structura::core::SearchTree<int> tree;
 
     tree.insert(4);
     tree.insert(2);
@@ -184,7 +185,7 @@ TEST_CASE("SearchTree: remove() deletes leaf node") {
 }
 
 TEST_CASE("SearchTree: remove() deletes node with one child") {
-    fsd::core::SearchTree<int> tree;
+    structura::core::SearchTree<int> tree;
 
     tree.insert(4);
     tree.insert(2);
@@ -204,7 +205,7 @@ TEST_CASE("SearchTree: remove() deletes node with one child") {
 }
 
 TEST_CASE("SearchTree: remove() deletes node with two children") {
-    fsd::core::SearchTree<int> tree;
+    structura::core::SearchTree<int> tree;
 
     tree.insert(4);
     tree.insert(2);
@@ -230,7 +231,7 @@ TEST_CASE("SearchTree: remove() deletes node with two children") {
 }
 
 TEST_CASE("SearchTree: remove() does nothing for missing value") {
-    fsd::core::SearchTree<int> tree;
+    structura::core::SearchTree<int> tree;
 
     tree.insert(4);
     tree.insert(2);
@@ -245,7 +246,7 @@ TEST_CASE("SearchTree: remove() does nothing for missing value") {
 }
 
 TEST_CASE("SearchTree: iterators traverse values in inorder sequence") {
-    fsd::core::SearchTree<int> tree;
+    structura::core::SearchTree<int> tree;
 
     tree.insert(4);
     tree.insert(2);
@@ -268,13 +269,13 @@ TEST_CASE("SearchTree: iterators traverse values in inorder sequence") {
 }
 
 TEST_CASE("SearchTree: copy construction creates equal independent tree") {
-    fsd::core::SearchTree<int> original;
+    structura::core::SearchTree<int> original;
 
     original.insert(4);
     original.insert(2);
     original.insert(6);
 
-    fsd::core::SearchTree<int> copy(original);
+    structura::core::SearchTree<int> copy(original);
 
     auto originalTraversal = original.inorder();
     auto copyTraversal = copy.inorder();
@@ -291,13 +292,13 @@ TEST_CASE("SearchTree: copy construction creates equal independent tree") {
 }
 
 TEST_CASE("SearchTree: move construction transfers contents") {
-    fsd::core::SearchTree<int> original;
+    structura::core::SearchTree<int> original;
 
     original.insert(4);
     original.insert(2);
     original.insert(6);
 
-    fsd::core::SearchTree<int> moved(std::move(original));
+    structura::core::SearchTree<int> moved(std::move(original));
 
     CHECK(moved.size() == 3);
     CHECK(moved.search(4));

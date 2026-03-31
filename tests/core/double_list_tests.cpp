@@ -1,9 +1,10 @@
 // Created by Franz Seckel on 18.03.2026.
 #include <doctest.h>
-#include <fsd/core/double_list.hpp>
+#include <structura/core/double_list.hpp>
+
 
 TEST_CASE("DoubleList: default construction creates empty list") {
-    fsd::core::DoubleList<int> list;
+    structura::core::DoubleList<int> list;
 
     CHECK(list.size() == 0);
     CHECK(list.empty());
@@ -12,7 +13,7 @@ TEST_CASE("DoubleList: default construction creates empty list") {
 }
 
 TEST_CASE("DoubleList: initializer_list constructor preserves element order") {
-    fsd::core::DoubleList<int> list{1, 2, 3};
+    structura::core::DoubleList<int> list{1, 2, 3};
 
     CHECK(list.size() == 3);
     CHECK_FALSE(list.empty());
@@ -24,7 +25,7 @@ TEST_CASE("DoubleList: initializer_list constructor preserves element order") {
 }
 
 TEST_CASE("DoubleList: pushFront() prepends elements to the front") {
-    fsd::core::DoubleList<int> list;
+    structura::core::DoubleList<int> list;
 
     list.pushFront(10);
     list.pushFront(20);
@@ -39,7 +40,7 @@ TEST_CASE("DoubleList: pushFront() prepends elements to the front") {
 }
 
 TEST_CASE("DoubleList: pushBack() appends elements to the back") {
-    fsd::core::DoubleList<int> list;
+    structura::core::DoubleList<int> list;
 
     list.pushBack(10);
     list.pushBack(20);
@@ -54,7 +55,7 @@ TEST_CASE("DoubleList: pushBack() appends elements to the back") {
 }
 
 TEST_CASE("DoubleList: insertAt() inserts element at arbitrary position") {
-    fsd::core::DoubleList<int> list{1, 3, 4};
+    structura::core::DoubleList<int> list{1, 3, 4};
 
     list.insertAt(1, 2);
 
@@ -66,7 +67,7 @@ TEST_CASE("DoubleList: insertAt() inserts element at arbitrary position") {
 }
 
 TEST_CASE("DoubleList: removeAt() removes element and links remaining nodes") {
-    fsd::core::DoubleList<int> list{1, 2, 3, 4};
+    structura::core::DoubleList<int> list{1, 2, 3, 4};
 
     list.removeAt(1);
 
@@ -79,7 +80,7 @@ TEST_CASE("DoubleList: removeAt() removes element and links remaining nodes") {
 }
 
 TEST_CASE("DoubleList: popFront() removes the first element") {
-    fsd::core::DoubleList<int> list{1, 2, 3};
+    structura::core::DoubleList<int> list{1, 2, 3};
 
     list.popFront();
 
@@ -91,7 +92,7 @@ TEST_CASE("DoubleList: popFront() removes the first element") {
 }
 
 TEST_CASE("DoubleList: popBack() removes the last element") {
-    fsd::core::DoubleList<int> list{1, 2, 3};
+    structura::core::DoubleList<int> list{1, 2, 3};
 
     list.popBack();
 
@@ -103,7 +104,7 @@ TEST_CASE("DoubleList: popBack() removes the last element") {
 }
 
 TEST_CASE("DoubleList: at() throws on out-of-bounds access") {
-    fsd::core::DoubleList<int> list{1, 2, 3};
+    structura::core::DoubleList<int> list{1, 2, 3};
 
     CHECK_NOTHROW(list.at(0));
     CHECK_NOTHROW(list.at(2));
@@ -111,7 +112,7 @@ TEST_CASE("DoubleList: at() throws on out-of-bounds access") {
 }
 
 TEST_CASE("DoubleList: update() replaces value at given index") {
-    fsd::core::DoubleList<int> list{1, 2, 3};
+    structura::core::DoubleList<int> list{1, 2, 3};
 
     list.update(1, 99);
 
@@ -122,7 +123,7 @@ TEST_CASE("DoubleList: update() replaces value at given index") {
 }
 
 TEST_CASE("DoubleList: clear() removes all elements") {
-    fsd::core::DoubleList<int> list{1, 2, 3, 4};
+    structura::core::DoubleList<int> list{1, 2, 3, 4};
 
     list.clear();
 
@@ -133,8 +134,8 @@ TEST_CASE("DoubleList: clear() removes all elements") {
 }
 
 TEST_CASE("DoubleList: copy construction creates equal independent copy") {
-    fsd::core::DoubleList<int> original{1, 2, 3};
-    fsd::core::DoubleList<int> copy(original);
+    structura::core::DoubleList<int> original{1, 2, 3};
+    structura::core::DoubleList<int> copy(original);
 
     CHECK(copy == original);
 
@@ -146,9 +147,9 @@ TEST_CASE("DoubleList: copy construction creates equal independent copy") {
 }
 
 TEST_CASE("DoubleList: move construction transfers contents") {
-    fsd::core::DoubleList<int> original{1, 2, 3};
+    structura::core::DoubleList<int> original{1, 2, 3};
 
-    fsd::core::DoubleList<int> moved(std::move(original));
+    structura::core::DoubleList<int> moved(std::move(original));
 
     CHECK(moved.size() == 3);
     CHECK(moved.front() == 1);
@@ -162,7 +163,7 @@ TEST_CASE("DoubleList: move construction transfers contents") {
 }
 
 TEST_CASE("DoubleList: find() returns iterator to matching element or end()") {
-    fsd::core::DoubleList<int> list{5, 10, 15};
+    structura::core::DoubleList<int> list{5, 10, 15};
 
     auto it = list.find(10);
     auto missing = list.find(99);
@@ -173,7 +174,7 @@ TEST_CASE("DoubleList: find() returns iterator to matching element or end()") {
 }
 
 TEST_CASE("DoubleList: iterators traverse elements in forward order") {
-    fsd::core::DoubleList<int> list{1, 2, 3, 4};
+    structura::core::DoubleList<int> list{1, 2, 3, 4};
 
     int expected = 1;
     for (auto it = list.begin(); it != list.end(); ++it) {
@@ -183,7 +184,7 @@ TEST_CASE("DoubleList: iterators traverse elements in forward order") {
 }
 
 TEST_CASE("DoubleList: reverse iterators traverse elements in reverse order") {
-    fsd::core::DoubleList<int> list{1, 2, 3, 4};
+    structura::core::DoubleList<int> list{1, 2, 3, 4};
 
     int expected = 4;
     for (auto it = list.rbegin(); it != list.rend(); ++it) {
@@ -193,9 +194,9 @@ TEST_CASE("DoubleList: reverse iterators traverse elements in reverse order") {
 }
 
 TEST_CASE("DoubleList: comparison operators are lexicographical") {
-    fsd::core::DoubleList<int> a{1, 2, 3};
-    fsd::core::DoubleList<int> b{1, 2, 3};
-    fsd::core::DoubleList<int> c{1, 2, 4};
+    structura::core::DoubleList<int> a{1, 2, 3};
+    structura::core::DoubleList<int> b{1, 2, 3};
+    structura::core::DoubleList<int> c{1, 2, 4};
 
     CHECK(a == b);
     CHECK(a != c);

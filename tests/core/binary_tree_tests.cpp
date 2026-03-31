@@ -1,9 +1,10 @@
 // Created by Franz Seckel on 18.03.2026.
 #include <doctest.h>
-#include <fsd/core/binary_tree.hpp>
+#include <structura/core/binary_tree.hpp>
+
 
 TEST_CASE("BinaryTree: default construction creates empty tree") {
-    fsd::core::BinaryTree<int> tree;
+    structura::core::BinaryTree<int> tree;
 
     CHECK(tree.size() == 0);
     CHECK(tree.empty());
@@ -12,7 +13,7 @@ TEST_CASE("BinaryTree: default construction creates empty tree") {
 }
 
 TEST_CASE("BinaryTree: insert() adds first element as root") {
-    fsd::core::BinaryTree<int> tree;
+    structura::core::BinaryTree<int> tree;
 
     tree.insert(10);
 
@@ -23,7 +24,7 @@ TEST_CASE("BinaryTree: insert() adds first element as root") {
 }
 
 TEST_CASE("BinaryTree: insert() fills tree in level-order") {
-    fsd::core::BinaryTree<int> tree;
+    structura::core::BinaryTree<int> tree;
 
     tree.insert(1);
     tree.insert(2);
@@ -44,7 +45,7 @@ TEST_CASE("BinaryTree: insert() fills tree in level-order") {
 }
 
 TEST_CASE("BinaryTree: search() returns true for inserted values and false otherwise") {
-    fsd::core::BinaryTree<int> tree;
+    structura::core::BinaryTree<int> tree;
 
     tree.insert(10);
     tree.insert(20);
@@ -57,7 +58,7 @@ TEST_CASE("BinaryTree: search() returns true for inserted values and false other
 }
 
 TEST_CASE("BinaryTree: preorder() returns preorder traversal") {
-    fsd::core::BinaryTree<int> tree;
+    structura::core::BinaryTree<int> tree;
 
     tree.insert(1);
     tree.insert(2);
@@ -76,7 +77,7 @@ TEST_CASE("BinaryTree: preorder() returns preorder traversal") {
 }
 
 TEST_CASE("BinaryTree: inorder() returns inorder traversal") {
-    fsd::core::BinaryTree<int> tree;
+    structura::core::BinaryTree<int> tree;
 
     tree.insert(1);
     tree.insert(2);
@@ -95,7 +96,7 @@ TEST_CASE("BinaryTree: inorder() returns inorder traversal") {
 }
 
 TEST_CASE("BinaryTree: postorder() returns postorder traversal") {
-    fsd::core::BinaryTree<int> tree;
+    structura::core::BinaryTree<int> tree;
 
     tree.insert(1);
     tree.insert(2);
@@ -114,7 +115,7 @@ TEST_CASE("BinaryTree: postorder() returns postorder traversal") {
 }
 
 TEST_CASE("BinaryTree: levelOrder() returns breadth-first traversal") {
-    fsd::core::BinaryTree<int> tree;
+    structura::core::BinaryTree<int> tree;
 
     tree.insert(1);
     tree.insert(2);
@@ -133,7 +134,7 @@ TEST_CASE("BinaryTree: levelOrder() returns breadth-first traversal") {
 }
 
 TEST_CASE("BinaryTree: remove() removes existing value from tree") {
-    fsd::core::BinaryTree<int> tree;
+    structura::core::BinaryTree<int> tree;
 
     tree.insert(1);
     tree.insert(2);
@@ -147,7 +148,7 @@ TEST_CASE("BinaryTree: remove() removes existing value from tree") {
 }
 
 TEST_CASE("BinaryTree: remove() does nothing for missing value") {
-    fsd::core::BinaryTree<int> tree;
+    structura::core::BinaryTree<int> tree;
 
     tree.insert(1);
     tree.insert(2);
@@ -162,7 +163,7 @@ TEST_CASE("BinaryTree: remove() does nothing for missing value") {
 }
 
 TEST_CASE("BinaryTree: clear() removes all elements") {
-    fsd::core::BinaryTree<int> tree;
+    structura::core::BinaryTree<int> tree;
 
     tree.insert(1);
     tree.insert(2);
@@ -177,13 +178,13 @@ TEST_CASE("BinaryTree: clear() removes all elements") {
 }
 
 TEST_CASE("BinaryTree: copy construction creates equal independent tree structure") {
-    fsd::core::BinaryTree<int> original;
+    structura::core::BinaryTree<int> original;
 
     original.insert(1);
     original.insert(2);
     original.insert(3);
 
-    fsd::core::BinaryTree<int> copy(original);
+    structura::core::BinaryTree<int> copy(original);
 
     auto originalLevel = original.levelOrder();
     auto copyLevel = copy.levelOrder();
@@ -200,13 +201,13 @@ TEST_CASE("BinaryTree: copy construction creates equal independent tree structur
 }
 
 TEST_CASE("BinaryTree: move construction transfers contents") {
-    fsd::core::BinaryTree<int> original;
+    structura::core::BinaryTree<int> original;
 
     original.insert(1);
     original.insert(2);
     original.insert(3);
 
-    fsd::core::BinaryTree<int> moved(std::move(original));
+    structura::core::BinaryTree<int> moved(std::move(original));
 
     CHECK(moved.size() == 3);
     CHECK(moved.search(1));
@@ -217,7 +218,7 @@ TEST_CASE("BinaryTree: move construction transfers contents") {
 }
 
 TEST_CASE("BinaryTree: iterators traverse tree in inorder sequence") {
-    fsd::core::BinaryTree<int> tree;
+    structura::core::BinaryTree<int> tree;
 
     tree.insert(1);
     tree.insert(2);

@@ -1,9 +1,10 @@
 // Created by Franz Seckel on 17.03.2026.
 #include <doctest.h>
-#include <fsd/core/array.hpp>
+#include <structura/core/array.hpp>
+
 
 TEST_CASE("Array: default construction initializes with fixed size") {
-    fsd::core::Array<int, 4> a;
+    structura::core::Array<int, 4> a;
 
     CHECK(a.size() == 4);
     CHECK(a.maxSize() == 4);
@@ -16,7 +17,7 @@ TEST_CASE("Array: default construction initializes with fixed size") {
 }
 
 TEST_CASE("Array: initializer_list construction copies provided values") {
-    fsd::core::Array<int, 4> a{1, 2, 3};
+    structura::core::Array<int, 4> a{1, 2, 3};
 
     CHECK(a.size() == 4);
     CHECK(a[0] == 1);
@@ -26,7 +27,7 @@ TEST_CASE("Array: initializer_list construction copies provided values") {
 }
 
 TEST_CASE("Array: front(), back() and data() provide element access") {
-    fsd::core::Array<int, 3> a{10, 20, 30};
+    structura::core::Array<int, 3> a{10, 20, 30};
 
     CHECK(a.front() == 10);
     CHECK(a.back() == 30);
@@ -35,7 +36,7 @@ TEST_CASE("Array: front(), back() and data() provide element access") {
 }
 
 TEST_CASE("Array: at() throws on invalid access") {
-    fsd::core::Array<int, 3> a{1, 2, 3};
+    structura::core::Array<int, 3> a{1, 2, 3};
 
     CHECK_NOTHROW(a.at(0));
     CHECK_NOTHROW(a.at(2));
@@ -43,7 +44,7 @@ TEST_CASE("Array: at() throws on invalid access") {
 }
 
 TEST_CASE("Array: fill() assigns all elements") {
-    fsd::core::Array<int, 5> a{1, 2, 3, 4, 5};
+    structura::core::Array<int, 5> a{1, 2, 3, 4, 5};
 
     a.fill(9);
 
@@ -53,8 +54,8 @@ TEST_CASE("Array: fill() assigns all elements") {
 }
 
 TEST_CASE("Array: swap() exchanges contents") {
-    fsd::core::Array<int, 3> a{1, 2, 3};
-    fsd::core::Array<int, 3> b{4, 5, 6};
+    structura::core::Array<int, 3> a{1, 2, 3};
+    structura::core::Array<int, 3> b{4, 5, 6};
 
     a.swap(b);
 
@@ -68,9 +69,9 @@ TEST_CASE("Array: swap() exchanges contents") {
 }
 
 TEST_CASE("Array: comparison operators are lexicographical") {
-    fsd::core::Array<int, 3> a{1, 2, 3};
-    fsd::core::Array<int, 3> b{1, 2, 3};
-    fsd::core::Array<int, 3> c{1, 2, 4};
+    structura::core::Array<int, 3> a{1, 2, 3};
+    structura::core::Array<int, 3> b{1, 2, 3};
+    structura::core::Array<int, 3> c{1, 2, 4};
 
     CHECK(a == b);
     CHECK(a != c);
@@ -81,7 +82,7 @@ TEST_CASE("Array: comparison operators are lexicographical") {
 }
 
 TEST_CASE("Array: iterators traverse elements in order") {
-    fsd::core::Array<int, 4> a{1, 2, 3, 4};
+    structura::core::Array<int, 4> a{1, 2, 3, 4};
 
     int expected = 1;
     for (auto it = a.begin(); it != a.end(); ++it) {
@@ -91,7 +92,7 @@ TEST_CASE("Array: iterators traverse elements in order") {
 }
 
 TEST_CASE("Array: reverse iterators traverse elements in reverse order") {
-    fsd::core::Array<int, 4> a{1, 2, 3, 4};
+    structura::core::Array<int, 4> a{1, 2, 3, 4};
 
     int expected = 4;
     for (auto it = a.rbegin(); it != a.rend(); ++it) {
